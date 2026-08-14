@@ -1,4 +1,4 @@
-import {app} from "./app.js";
+import app from "./app.js";
 const port=8080;
 app.listen(port,() => {
     console.log(`Server listens on port ${port}`);

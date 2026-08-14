@@ -22,19 +22,19 @@ export const logs = pgTable(
 
     message: text("message").notNull(),
 
-    attributes: jsonb("attributes").notNull(),
+    attributes: jsonb("attributes"),
   },
-  (table) => ({
-    attributesGinIndex: index("ix_logs_attributes")
+  (table) => [
+    index("ix_logs_attributes")
       .using("gin", table.attributes),
 
-    timestampIdIndex: index("ix_logs_timestamp_id")
+    index("ix_logs_timestamp_id")
       .on(table.timestamp, table.id),
 
-    serviceTimestampIdIndex: index("ix_logs_service_timestamp_id")
+    index("ix_logs_service_timestamp_id")
       .on(table.serviceName, table.timestamp, table.id),
 
-    levelTimestampIdIndex: index("ix_logs_level_timestamp_id")
+    index("ix_logs_level_timestamp_id")
       .on(table.level, table.timestamp, table.id),
-  }),
+  ],
 );
