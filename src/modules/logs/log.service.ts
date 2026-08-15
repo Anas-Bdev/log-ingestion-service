@@ -1,7 +1,7 @@
 import { serial } from "drizzle-orm/mysql-core";
 import { logLevelSchema, logRequestSchema } from "./log.validation.js";
-import { GetLogsRequest, LogRequest } from "./log.types.js";
-import { getLogsFromDatabase, insertLogs } from "./log.repository.js";
+import { AggregateLogsRequest, GetLogsRequest, LogRequest } from "./log.types.js";
+import { aggregateLogsFromDatabase, getLogsFromDatabase, insertLogs } from "./log.repository.js";
 import { encodeCursor } from "./log.cursor.js";
 
 export const ingestLogs=async (logs:unknown[]) => {
@@ -52,4 +52,8 @@ export const getLogs=async (input : GetLogsRequest) => {
     }
     return {logs,next_cursor:nextCursor};
 
+}
+
+export const aggregateLogs=(input: AggregateLogsRequest) => {
+    return aggregateLogsFromDatabase(input);
 }
