@@ -1,4 +1,4 @@
-import {z} from "zod";
+import {date, z} from "zod";
 import { decodeCursor } from "./log.cursor.js";
 export const ingestLogsRequestSchema = z.object({
   logs: z.array(z.unknown()),
@@ -25,7 +25,24 @@ export const logLevelSchema=z.enum([
     "error"
 ]);
 
+export const bucketSchema=z.enum(["1m","5m","1h","1d"]);
+export const groupBySchema=z.enum(["service","level"]);
 
+export const aggregateLogsQuerySchema=z.object({
+    service:z.string().optional(),
+    level:logLevelSchema.optional(),
+    since:z.iso.datetime({offset:true}),
+    until:z.iso.datetime({offset:true}),
+    bucket:bucketSchema,
+    group_by:groupBySchema.optional(),
+    q:z.string().optional()
+}).refine(
+    data => new Date(data.until) >= new Date(data.since),
+    {
+        message: "until must not be earlier than since",
+        path:["until"]
+    }
+);
 
 export const getLogsQuerySchema=z.object({
     service: z.string().optional(),
@@ -66,5 +83,3 @@ export const logRequestSchema=z.object({
     attributes:z.record(z.string(), z.union([z.string(), z.number(),z.boolean()])).optional()
 
 })
-
-export type GetLogsQuery = z.infer<typeof getLogsQuerySchema>;
