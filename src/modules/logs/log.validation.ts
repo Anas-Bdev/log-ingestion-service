@@ -1,7 +1,22 @@
 import {z} from "zod";
+import { decodeCursor } from "./log.cursor.js";
 export const ingestLogsRequestSchema = z.object({
   logs: z.array(z.unknown()),
 });
+
+const cursorSchema = z.string().refine(
+    (cursor) => {
+        try {
+            decodeCursor(cursor);
+            return true;
+        } catch {
+            return false;
+        }
+    },
+    {
+        message: "Invalid or malformed cursor"
+    }
+);
 
 export const logLevelSchema=z.enum([
     "debug",
@@ -9,6 +24,30 @@ export const logLevelSchema=z.enum([
     "warn",
     "error"
 ]);
+
+
+
+export const getLogsQuerySchema=z.object({
+    service: z.string().optional(),
+    level:logLevelSchema.optional(),
+    since:z.iso.datetime({offset:true}).optional(),
+    until:z.iso.datetime({offset:true}).optional(),
+    q:z.string().optional(),
+    limit:z.coerce.number().int().min(1).max(1000).default(100),
+    cursor:cursorSchema.optional()
+}).refine(
+    data => {
+        if (!data.since || !data.until) {
+            return true;
+        }
+
+        return new Date(data.until) >= new Date(data.since);
+    },
+    {
+        message: "until must not be earlier than since",
+        path: ["until"]
+    }
+);
 
 export const logRequestSchema=z.object({
     timestamp : z.iso.datetime({offset:true}).refine(
@@ -27,3 +66,5 @@ export const logRequestSchema=z.object({
     attributes:z.record(z.string(), z.union([z.string(), z.number(),z.boolean()])).optional()
 
 })
+
+export type GetLogsQuery = z.infer<typeof getLogsQuerySchema>;

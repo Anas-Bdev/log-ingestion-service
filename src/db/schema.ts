@@ -18,7 +18,7 @@ export const logs = pgTable(
 
     level: text("level").notNull(),
 
-    serviceName: text("service_name").notNull(),
+    service: text("service_name").notNull(),
 
     message: text("message").notNull(),
 
@@ -32,7 +32,7 @@ export const logs = pgTable(
       .on(table.timestamp, table.id),
 
     index("ix_logs_service_timestamp_id")
-      .on(table.serviceName, table.timestamp, table.id),
+      .on(table.service, table.timestamp, table.id),
 
     index("ix_logs_level_timestamp_id")
       .on(table.level, table.timestamp, table.id),

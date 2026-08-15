@@ -1,7 +1,8 @@
 import { serial } from "drizzle-orm/mysql-core";
 import { logLevelSchema, logRequestSchema } from "./log.validation.js";
-import { LogRequest } from "./log.types.js";
-import { insertLogs } from "./log.repository.js";
+import { GetLogsRequest, LogRequest } from "./log.types.js";
+import { getLogsFromDatabase, insertLogs } from "./log.repository.js";
+import { encodeCursor } from "./log.cursor.js";
 
 export const ingestLogs=async (logs:unknown[]) => {
     const validLogs : LogRequest[]=[];
@@ -24,7 +25,7 @@ export const ingestLogs=async (logs:unknown[]) => {
             id:crypto.randomUUID(),
             timestamp:new Date(log.timestamp),
             level:log.level,
-            serviceName:log.service,
+            service:log.service,
             message:log.message,
             attributes:log.attributes
         }));
@@ -33,3 +34,22 @@ export const ingestLogs=async (logs:unknown[]) => {
     }
     return {accepted: validLogs.length,rejected};
 };
+
+export const getLogs=async (input : GetLogsRequest) => {
+    const logs=await getLogsFromDatabase(input);
+
+    const hasMore=logs.length > input.limit;
+    let nextCursor:string | null=null;
+
+    if(hasMore){
+        logs.pop();
+        let lastLog=logs[logs.length-1];
+        nextCursor=encodeCursor({
+            timestamp:lastLog.timestamp.toISOString(),
+            id:lastLog.id
+        });
+
+    }
+    return {logs,next_cursor:nextCursor};
+
+}
