@@ -15,6 +15,13 @@
       "when": 1786735164952,
       "tag": "0001_neat_spacker_dave",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1787074436849,
+      "tag": "0002_thankful_black_queen",
+      "breakpoints": true
     }
   ]
 }
