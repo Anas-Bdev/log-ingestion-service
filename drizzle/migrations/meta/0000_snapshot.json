@@ -1,5 +1,5 @@
 {
-  "id": "d8712b10-2d4f-468b-9611-6d1dcf72689e",
+  "id": "ceda2473-2d32-4b89-874d-2ed5052bee88",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -10,9 +10,20 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "bigint",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "logs_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "9223372036854775807",
+            "cache": "1",
+            "cycle": false
+          }
         },
         "timestamp": {
           "name": "timestamp",
@@ -42,38 +53,23 @@
           "name": "attributes",
           "type": "jsonb",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {
-        "ix_logs_attributes": {
-          "name": "ix_logs_attributes",
-          "columns": [
-            {
-              "expression": "attributes",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "gin",
-          "with": {}
-        },
         "ix_logs_timestamp_id": {
           "name": "ix_logs_timestamp_id",
           "columns": [
             {
               "expression": "timestamp",
               "isExpression": false,
-              "asc": true,
+              "asc": false,
               "nulls": "last"
             },
             {
               "expression": "id",
               "isExpression": false,
-              "asc": true,
+              "asc": false,
               "nulls": "last"
             }
           ],
@@ -94,40 +90,13 @@
             {
               "expression": "timestamp",
               "isExpression": false,
-              "asc": true,
+              "asc": false,
               "nulls": "last"
             },
             {
               "expression": "id",
               "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "ix_logs_level_timestamp_id": {
-          "name": "ix_logs_level_timestamp_id",
-          "columns": [
-            {
-              "expression": "level",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "timestamp",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "id",
-              "isExpression": false,
-              "asc": true,
+              "asc": false,
               "nulls": "last"
             }
           ],

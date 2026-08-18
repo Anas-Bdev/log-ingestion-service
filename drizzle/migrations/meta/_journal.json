@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1786720488690,
-      "tag": "0000_peaceful_leper_queen",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1786735164952,
-      "tag": "0001_neat_spacker_dave",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1787074436849,
-      "tag": "0002_thankful_black_queen",
+      "when": 1787075418683,
+      "tag": "0000_daily_robin_chapel",
       "breakpoints": true
     }
   ]
