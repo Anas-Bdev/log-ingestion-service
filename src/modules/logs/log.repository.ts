@@ -3,6 +3,7 @@ import { db } from "../../db/client.js";
 import { logs as logsTable } from "../../db/schema.js";
 import { AggregateLogsRequest, GetLogsRequest } from "./log.types.js";
 import { decodeCursor } from "./log.cursor.js";
+
 export const insertLogs=(logs : typeof logsTable.$inferInsert[]) => {
     return db.insert(logsTable).values(logs);
 }
@@ -22,14 +23,19 @@ export const getLogsFromDatabase=async(input : GetLogsRequest) => {
      if(input.until)
         conditions.push(lt(logsTable.timestamp,new Date(input.until)));
 
-     if(input.q)
-        conditions.push(ilike(logsTable.message,`%${input.q}%`));
+     if (input.q)
+    conditions.push(
+    sql`lower(${logsTable.message}) LIKE ${`%${input.q.toLowerCase()}%`}`
+    );
 
      for (const [key, value] of Object.entries(input.attributes)) {
       conditions.push(
-        sql`${logsTable.attributes}->>${key} = ${value}`
-    );
-}
+        sql`${logsTable.indexedAttributes} @> ${JSON.stringify({
+            [key]: String(value)
+        })}::jsonb`
+      );
+    }
+    
 
      if(input.cursor){
         const cursor=decodeCursor(input.cursor);
@@ -68,13 +74,17 @@ export const aggregateLogsFromDatabase=(input: AggregateLogsRequest) => {
     if(input.level)
     conditions.push(eq(logsTable.level,input.level));
 
-    if(input.q)
-    conditions.push(ilike(logsTable.message,`%${input.q}%`));
+    if (input.q)
+    conditions.push(
+    sql`lower(${logsTable.message}) LIKE ${`%${input.q.toLowerCase()}%`}`
+    );
 
     for (const [key, value] of Object.entries(input.attributes)) {
-        conditions.push(
-            sql`${logsTable.attributes}->>${key} = ${value}`
-        );
+      conditions.push(
+        sql`${logsTable.indexedAttributes} @> ${JSON.stringify({
+            [key]: String(value)
+        })}::jsonb`
+      );
     }
 
     const bucketIntervals = {

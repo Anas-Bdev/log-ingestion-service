@@ -2,6 +2,7 @@ import { logLevelSchema, logRequestSchema } from "./log.validation.js";
 import { AggregateLogsRequest, GetLogsRequest, LogRequest } from "./log.types.js";
 import { aggregateLogsFromDatabase, getLogsFromDatabase, insertLogs } from "./log.repository.js";
 import { encodeCursor } from "./log.cursor.js";
+import { string } from "zod";
 
 export const ingestLogs=async (logs:unknown[]) => {
     const validLogs : LogRequest[]=[];
@@ -25,7 +26,13 @@ export const ingestLogs=async (logs:unknown[]) => {
             level:log.level,
             service:log.service,
             message:log.message,
-            attributes:log.attributes
+            attributes:log.attributes,
+            indexedAttributes:Object.fromEntries(
+                Object.entries(log.attributes ?? {}).map(([key,value]) => [
+                    key,
+                    String(value)
+                ])
+            )
         }));
 
         await insertLogs(rows);
