@@ -1,6 +1,7 @@
+import { sql } from "drizzle-orm";
 import {
   pgTable,
-  uuid,
+  bigint,
   timestamp,
   text,
   jsonb,
@@ -10,7 +11,7 @@ import {
 export const logs = pgTable(
   "logs",
   {
-    id: uuid("id").primaryKey(),
+    id:bigint("id",{mode:"number"}).primaryKey().generatedAlwaysAsIdentity(),
 
     timestamp: timestamp("timestamp", {
       withTimezone: true,
@@ -25,16 +26,11 @@ export const logs = pgTable(
     attributes: jsonb("attributes"),
   },
   (table) => [
-    index("ix_logs_attributes")
-      .using("gin", table.attributes),
-
+    
     index("ix_logs_timestamp_id")
-      .on(table.timestamp, table.id),
+      .on(table.timestamp.desc(), table.id.desc()),
 
     index("ix_logs_service_timestamp_id")
-      .on(table.service, table.timestamp, table.id),
-
-    index("ix_logs_level_timestamp_id")
-      .on(table.level, table.timestamp, table.id),
+      .on(table.service, table.timestamp.desc(), table.id.desc()),
   ],
 );
