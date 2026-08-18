@@ -2,7 +2,7 @@ import { json } from "zod";
 
 export type LogCursor={
     timestamp:string;
-    id:string;
+    id:number;
 }
 
 export const encodeCursor=(cursor: LogCursor) => {

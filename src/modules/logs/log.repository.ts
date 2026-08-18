@@ -26,7 +26,7 @@ export const getLogsFromDatabase=async(input : GetLogsRequest) => {
         conditions.push(ilike(logsTable.message,`%${input.q}%`));
 
      for (const [key, value] of Object.entries(input.attributes)) {
-    conditions.push(
+      conditions.push(
         sql`${logsTable.attributes}->>${key} = ${value}`
     );
 }

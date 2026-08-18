@@ -1,4 +1,3 @@
-import { serial } from "drizzle-orm/mysql-core";
 import { logLevelSchema, logRequestSchema } from "./log.validation.js";
 import { AggregateLogsRequest, GetLogsRequest, LogRequest } from "./log.types.js";
 import { aggregateLogsFromDatabase, getLogsFromDatabase, insertLogs } from "./log.repository.js";
@@ -22,7 +21,6 @@ export const ingestLogs=async (logs:unknown[]) => {
 
     if(validLogs.length > 0){
         const rows=validLogs.map(log => ({
-            id:crypto.randomUUID(),
             timestamp:new Date(log.timestamp),
             level:log.level,
             service:log.service,
