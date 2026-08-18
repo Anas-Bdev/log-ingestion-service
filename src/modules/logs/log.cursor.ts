@@ -1,4 +1,3 @@
-import { json } from "zod";
 
 export type LogCursor={
     timestamp:string;
@@ -19,7 +18,7 @@ export const decodeCursor=(cursor:string) => {
         !("timestamp" in parsed) ||
         !("id" in parsed) ||
         typeof parsed.timestamp !== "string" ||
-        typeof parsed.id !== "string"
+        typeof parsed.id !== "number"
     ) {
         throw new Error("Invalid cursor");
     }
