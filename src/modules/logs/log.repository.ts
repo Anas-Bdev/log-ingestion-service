@@ -1,11 +1,11 @@
 import { and, asc, desc, eq, gte, ilike, lt, or, sql } from "drizzle-orm";
-import { db } from "../../db/client.js";
+import { dbWrite,dbRead } from "../../db/client.js";
 import { logs as logsTable } from "../../db/schema.js";
 import { AggregateLogsRequest, GetLogsRequest } from "./log.types.js";
 import { decodeCursor } from "./log.cursor.js";
 
 export const insertLogs=(logs : typeof logsTable.$inferInsert[]) => {
-    return db.insert(logsTable).values(logs);
+    return dbWrite.insert(logsTable).values(logs);
 }
 
 export const getLogsFromDatabase=async(input : GetLogsRequest) => {
@@ -49,7 +49,7 @@ export const getLogsFromDatabase=async(input : GetLogsRequest) => {
          )
         )
      }
-     return db
+     return dbRead
             .select()
             .from(logsTable)
             .where(conditions.length > 0 ? and(...conditions) : undefined)
@@ -104,7 +104,7 @@ export const aggregateLogsFromDatabase=(input: AggregateLogsRequest) => {
         )`;
 
     if(!input.group_by){
-        return db
+        return dbRead
                .select({
                 start:bucketStart,
                 group:sql<string|null>`NULL`,
@@ -117,7 +117,7 @@ export const aggregateLogsFromDatabase=(input: AggregateLogsRequest) => {
     }
 
      if (input.group_by === "service") {
-        return db
+        return dbRead
             .select({
                 start: bucketStart,
                 group: logsTable.service,
@@ -129,7 +129,7 @@ export const aggregateLogsFromDatabase=(input: AggregateLogsRequest) => {
             .orderBy(asc(bucketStart));
     }
 
-    return db
+    return dbRead
         .select({
             start: bucketStart,
             group: logsTable.level,

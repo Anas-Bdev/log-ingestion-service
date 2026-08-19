@@ -3,6 +3,13 @@ import postgres from "postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
 const databaseUrl = process.env.DATABASE_URL!;
 
-const client = postgres(databaseUrl);
+const writeClient=postgres(databaseUrl,{
+    max:3
+});
 
-export const db = drizzle(client);
+const readClient=postgres(databaseUrl,{
+    max:5
+});
+
+export const dbWrite = drizzle(writeClient);
+export const dbRead=drizzle(readClient);

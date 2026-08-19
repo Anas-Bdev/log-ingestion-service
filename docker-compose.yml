@@ -3,11 +3,14 @@ services:
     build: .
     ports:
       - "8080:8080"
+
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/logs
+
     depends_on:
       postgres:
         condition: service_healthy
+
     deploy:
       resources:
         limits:
@@ -16,17 +19,28 @@ services:
 
   postgres:
     image: postgres:18
+
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: logs
+
+    command:
+      - postgres
+      - -c
+      - shared_buffers=256MB
+      - -c
+      - effective_cache_size=512MB
+
     volumes:
       - postgres_data:/var/lib/postgresql
+
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d logs"]
       interval: 5s
       timeout: 5s
       retries: 5
+
     deploy:
       resources:
         limits:
