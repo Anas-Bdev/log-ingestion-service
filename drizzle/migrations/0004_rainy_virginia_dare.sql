@@ -1,0 +1,1 @@
+DROP INDEX "ix_log_minute_rollups_bucket";

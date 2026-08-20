@@ -27,12 +27,6 @@ export const ingestLogs=async (logs:unknown[]) => {
             service:log.service,
             message:log.message,
             attributes:log.attributes,
-            indexedAttributes:Object.fromEntries(
-                Object.entries(log.attributes ?? {}).map(([key,value]) => [
-                    key,
-                    String(value)
-                ])
-            )
         }));
 
         await insertLogs(rows);

@@ -31,6 +31,8 @@ services:
       - shared_buffers=256MB
       - -c
       - effective_cache_size=512MB
+      - -c
+      - work_mem=32MB
 
     volumes:
       - postgres_data:/var/lib/postgresql

@@ -6,6 +6,8 @@ import {
   text,
   jsonb,
   index,
+  primaryKey,
+  integer,
 } from "drizzle-orm/pg-core";
 
 export const logs = pgTable(
@@ -19,12 +21,11 @@ export const logs = pgTable(
 
     level: text("level").notNull(),
 
-    service: text("service_name").notNull(),
+    service: text("service").notNull(),
 
     message: text("message").notNull(),
 
     attributes: jsonb("attributes"),
-    indexedAttributes:jsonb("indexed_attributes").notNull().default({}),
   },
   (table) => [
     
@@ -34,10 +35,7 @@ export const logs = pgTable(
     index("ix_logs_service_timestamp_id")
       .on(table.service, table.timestamp.desc(), table.id.desc()),
 
-    index("ix_logs_indexed_attributes_gin")
-    .using("gin", sql`${table.indexedAttributes} jsonb_path_ops`),
-
-    index("ix_logs_message_trgm")
-    .using("gin", sql`lower(${table.message}) gin_trgm_ops`),
+   
   ],
 );
+
